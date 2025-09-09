@@ -1,0 +1,80 @@
+version: '3.8'  # 兼容主流 Docker 版本的语法
+
+# 定义服务集合
+services:
+  # 1. MySQL 数据库服务
+  mysql:
+    image: mysql:8.0.33  # 使用指定版本的 MySQL 镜像（与你的驱动匹配）
+    container_name: app-mysql
+    restart: always  # 容器退出时自动重启
+    environment:
+      MYSQL_ROOT_PASSWORD: root123  # 根用户密码
+      MYSQL_DATABASE: forum_db  # 自动创建的数据库名（根据你的项目修改）
+      MYSQL_USER: forum_user  # 应用专用用户
+      MYSQL_PASSWORD: user123  # 应用用户密码
+    ports:
+      - "3306:3306"  # 映射端口到本地（宿主机:容器）
+    volumes:
+      - D:/docker/mysql-data:/var/lib/mysql  # 持久化数据到卷（避免容器删除后数据丢失）
+      - ./mysql-init:/docker-entrypoint-initdb.d  # 可选：初始化脚本目录（如建表语句）
+    networks:
+      - app-network  # 加入自定义网络，与其他服务通信
+    healthcheck:  # 健康检查（确保数据库就绪后再启动应用）
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis 缓存服务
+  redis:
+    image: redis:7.0  # 稳定版本的 Redis 镜像
+    container_name: app-redis
+    restart: always
+    ports:
+      - "6379:6379"  # 映射 Redis 端口
+    volumes:
+      - redis-data:/data  # 持久化 Redis 数据
+    networks:
+      - app-network
+    command: redis-server --requirepass redis123  # 设置 Redis 密码（根据项目配置修改）
+    healthcheck:  # 检查 Redis 是否就绪
+      test: ["CMD", "redis-cli", "-a", "redis123", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  # 3. 你的 Spring Boot 项目服务（通过 Dockerfile 构建）
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile  # 指定 Dockerfile 文件名（默认即可）
+    container_name: forum-app
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy  # 等待 MySQL 健康检查通过才启动
+      redis:
+        condition: service_healthy  # 等待 Redis 健康检查通过才启动
+    ports:
+      - "8080:8080"  # 应用端口映射（宿主机:容器）
+    environment:
+      # 数据库连接配置（与 MySQL 服务对应）
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/forum_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: forum_user
+      SPRING_DATASOURCE_PASSWORD: user123
+      # Redis 连接配置（与 Redis 服务对应）
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: redis123
+    networks:
+      - app-network
+
+# 定义数据卷（持久化数据）
+#volumes:
+#  mysql-data:  # MySQL 数据卷
+#  redis-data:  # Redis 数据卷
+
+# 定义自定义网络（服务间通过服务名通信，无需暴露端口到宿主机）
+networks:
+  app-network:
+    driver: bridge  # 桥接网络，适合单机部署
