@@ -45,24 +45,21 @@ services:
 
   # 3. 你的 Spring Boot 项目服务（通过 Dockerfile 构建）
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile  # 指定 Dockerfile 文件名（默认即可）
+    image: $DOCKER_HUB_USERNAME/forum-app:$TAG  # 使用远程镜像（非本地构建）
+    # 移除 build 配置
     container_name: forum-app
     restart: always
     depends_on:
       mysql:
-        condition: service_healthy  # 等待 MySQL 健康检查通过才启动
+        condition: service_healthy
       redis:
-        condition: service_healthy  # 等待 Redis 健康检查通过才启动
+        condition: service_healthy
     ports:
-      - "8080:8080"  # 应用端口映射（宿主机:容器）
+      - "8080:8080"
     environment:
-      # 数据库连接配置（与 MySQL 服务对应）
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/forum_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: forum_user
       SPRING_DATASOURCE_PASSWORD: user123
-      # Redis 连接配置（与 Redis 服务对应）
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
       SPRING_REDIS_PASSWORD: redis123
