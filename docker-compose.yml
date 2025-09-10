@@ -15,7 +15,7 @@ services:
     ports:
       - "3306:3306"  # 映射端口到本地（宿主机:容器）
     volumes:
-      - D:/docker/mysql-data:/var/lib/mysql  # 持久化数据到卷（避免容器删除后数据丢失）
+      - /data/docker/mysql-data:/var/lib/mysql  # 持久化数据到卷（避免容器删除后数据丢失）
       - ./mysql-init:/docker-entrypoint-initdb.d  # 可选：初始化脚本目录（如建表语句）
     networks:
       - app-network  # 加入自定义网络，与其他服务通信
