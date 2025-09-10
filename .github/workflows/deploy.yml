@@ -1,22 +1,26 @@
 name: Deploy to EC2
 
+# 关键：扩展权限，允许读取工作流运行状态
 permissions:
   actions: read
 
 on:
-  workflow_run:
+  workflow_run:  # 正确的事件触发配置
     workflows: [ "pre-deploy" ]
     branches: [ TomLocal ]
-    types:
-      - completed             # 仅在 pre-deploy 完成后触发
+    types: [ completed ]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
+    # 再次确认条件（双重保障）
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # 关键：检出pre-deploy触发的原分支代码（而非默认分支）
+          ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -34,7 +38,6 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          # 使用 pre-deploy 触发的原提交 SHA 作为镜像标签
           TAG=${{ github.event.workflow_run.head_sha }}
           docker-compose -f docker-compose.yml build
           docker-compose -f docker-compose.yml push
@@ -57,4 +60,3 @@ jobs:
             docker-compose up -d
             
             docker system prune -af
-    

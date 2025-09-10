@@ -43,11 +43,9 @@ jobs:
             sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
 
-            # 创建目录并设置权限
             sudo mkdir -p /data/docker/mysql-data /data/docker/redis-data /home/ec2-user/dashliving
             sudo chmod -R 777 /data/docker /home/ec2-user/dashliving
 
-            # 验证安装结果
             echo "验证Docker安装..."
             docker --version || { echo "Docker安装失败"; exit 1; }
           
