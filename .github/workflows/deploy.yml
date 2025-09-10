@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: deploy to EC2
 
 # 关键：扩展权限，允许读取工作流运行状态
 permissions:
@@ -13,13 +13,11 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    # 再次确认条件（双重保障）
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # 关键：检出pre-deploy触发的原分支代码（而非默认分支）
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Set up Docker Buildx
