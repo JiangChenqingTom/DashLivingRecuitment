@@ -13,7 +13,15 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: Print workflow_run info
+        run: |
+          echo "是否触发：工作流已被触发！"
+          echo "前置工作流结论：${{ github.event.workflow_run.conclusion }}"
+          echo "前置工作流分支：${{ github.event.workflow_run.head_branch }}"
+          echo "前置工作流提交：${{ github.event.workflow_run.head_sha }}"
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
