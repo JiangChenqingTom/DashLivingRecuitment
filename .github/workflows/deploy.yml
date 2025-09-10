@@ -4,6 +4,7 @@ name: deploy to EC2
 permissions:
   actions: read
   contents: read
+  id-token: write
 
 on:
   workflow_run:  # 正确的事件触发配置
