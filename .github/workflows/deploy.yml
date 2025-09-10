@@ -5,11 +5,16 @@ permissions:
   contents: read
   id-token: write
 
+#on:
+#  workflow_run:
+#    workflows: [pre-deploy]
+#    branches: [TomLocal]
+#    types: [completed]
+
 on:
-  workflow_run:
-    workflows: [pre-deploy]
+  push:
     branches: [TomLocal]
-    types: [completed]
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
