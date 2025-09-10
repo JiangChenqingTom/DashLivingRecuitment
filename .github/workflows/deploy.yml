@@ -3,6 +3,7 @@ name: deploy to EC2
 # 关键：扩展权限，允许读取工作流运行状态
 permissions:
   actions: read
+  workflow_runs: read
 
 on:
   workflow_run:  # 正确的事件触发配置
