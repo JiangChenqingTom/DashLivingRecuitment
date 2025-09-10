@@ -33,7 +33,7 @@ services:
     ports:
       - "6379:6379"  # 映射 Redis 端口
     volumes:
-      - redis-data:/data  # 持久化 Redis 数据
+      - /data/docker/redis-data:/data:rw  # 持久化 Redis 数据
     networks:
       - app-network
     command: redis-server --requirepass redis123  # 设置 Redis 密码（根据项目配置修改）
