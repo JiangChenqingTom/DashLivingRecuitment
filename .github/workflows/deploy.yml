@@ -80,9 +80,11 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          TAG=${{ github.event.workflow_run.head_sha }}
-          docker-compose -f docker-compose.yml build app
-          docker-compose -f docker-compose.yml push app
+          export TAG=${{ github.event.workflow_run.head_sha }}
+          export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
+          
+          docker-compose -f docker-compose.yml build
+          docker-compose push
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
