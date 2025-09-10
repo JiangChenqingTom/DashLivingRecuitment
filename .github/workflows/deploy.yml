@@ -9,7 +9,7 @@ permissions:
 on:
   workflow_run:  # 正确的事件触发配置
     workflows: [ "pre-deploy" ]
-    branches: [ tomlocal ]
+    branches: [ TomLocal ]
     types: [ completed ]
 
 jobs:
