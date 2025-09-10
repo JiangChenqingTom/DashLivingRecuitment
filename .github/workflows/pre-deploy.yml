@@ -2,7 +2,7 @@ name: pre-deploy
 
 on:
   push:
-    branches: [ TomLocal ]
+    branches: [ tomlocal ]
   workflow_dispatch:
 
 jobs:
