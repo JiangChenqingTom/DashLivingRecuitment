@@ -1,11 +1,15 @@
 name: Deploy to EC2
 
 on:
-  push:
+  workflow_run:
+    workflows: [ "pre-deploy" ]
     branches: [ TomLocal ]
+    types:
+      - completed             # 仅在 pre-deploy 完成后触发
 
 jobs:
   build-and-deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -28,15 +32,16 @@ jobs:
 
       - name: Build and push Docker images
         run: |
-          TAG=${{ github.sha }}
+          # 使用 pre-deploy 触发的原提交 SHA 作为镜像标签
+          TAG=${{ github.event.workflow_run.head_sha }}
           docker-compose -f docker-compose.yml build
           docker-compose -f docker-compose.yml push
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
-          host: 13.55.171.19
-          username: ec2-user
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
             set +x
