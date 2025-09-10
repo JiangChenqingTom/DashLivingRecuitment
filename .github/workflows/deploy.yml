@@ -7,9 +7,9 @@ permissions:
 
 on:
   workflow_run:
-    workflows: [ "pre-deploy" ]
-    branches: [ TomLocal ]
-    types: [ completed ]
+    workflows: ["pre-deploy"]
+    branches: [TomLocal]
+    types: [completed]
 
 jobs:
   build-and-deploy:
