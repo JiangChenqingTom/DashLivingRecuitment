@@ -1,4 +1,4 @@
-name: pre-deploy
+name: predeploy
 
 on:
   push:
