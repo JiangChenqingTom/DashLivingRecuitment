@@ -18,20 +18,44 @@ jobs:
 
       - name: Install Docker & Prepare Directories
         run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          
+          ssh -t ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            # 解决RHEL订阅和仓库兼容问题
+            sudo rm -f /etc/yum.repos.d/docker-ce.repo
+            sudo curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-vault-8.5.2111.repo
+            sudo sed -i 's/$releasever/8/g' /etc/yum.repos.d/CentOS-Base.repo
+
+            # 安装Docker依赖
             sudo yum install -y yum-utils device-mapper-persistent-data lvm2
-            sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-          
-            sudo yum install -y docker-ce docker-ce-cli containerd.io
+
+            # 添加兼容的Docker仓库
+            sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+            sudo sed -i 's/$releasever/8/g' /etc/yum.repos.d/docker-ce.repo
+
+            # 安装Docker（允许替换冲突包）
+            sudo yum install -y docker-ce docker-ce-cli containerd.io --allowerasing
+
+            # 启动Docker并配置权限
             sudo systemctl enable --now docker
+            sudo groupadd -f docker  # 确保docker组存在
             sudo usermod -aG docker $USER
-          
+
+            # 安装Docker Compose
             sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
-          
+
+            # 创建目录并设置权限
             sudo mkdir -p /data/docker/mysql-data /data/docker/redis-data /home/ec2-user/dashliving
             sudo chmod -R 777 /data/docker /home/ec2-user/dashliving
+
+            # 验证安装结果
+            echo "验证Docker安装..."
+            docker --version || { echo "Docker安装失败"; exit 1; }
           
-            docker --version && docker-compose --version && ls -ld /data/docker/mysql-data /data/docker/redis-data /home/ec2-user/dashliving
+            echo "验证Docker Compose安装..."
+            docker-compose --version || { echo "Docker Compose安装失败"; exit 1; }
+          
+            echo "验证目录创建..."
+            ls -ld /data/docker/mysql-data /data/docker/redis-data /home/ec2-user/dashliving || { echo "目录创建失败"; exit 1; }
+          
+            echo "环境准备完成"
           EOF
