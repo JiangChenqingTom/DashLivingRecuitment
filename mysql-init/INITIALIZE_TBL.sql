@@ -1,41 +1,41 @@
 -- 先创建基础表 users
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE COMMENT '用户名，用于登录和显示',
-    email VARCHAR(100) NOT NULL UNIQUE COMMENT '用户邮箱，用于登录和验证',
-    password_hash VARCHAR(255) NOT NULL COMMENT '密码哈希，存储加密后的密码',
-    full_name VARCHAR(100) COMMENT '用户全名',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '账户创建时间',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '账户信息更新时间',
-    last_login_at TIMESTAMP COMMENT '最后登录时间',
-    is_active BOOLEAN DEFAULT TRUE COMMENT '账户是否激活',
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login_at TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,
     INDEX idx_email (email),
     INDEX idx_username (username)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 然后创建依赖于users的posts表
 CREATE TABLE posts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL COMMENT '帖子标题',
-    content TEXT NOT NULL COMMENT '帖子内容',
-    author_id BIGINT NOT NULL COMMENT '关联的用户ID（作者）',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '帖子创建时间',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '帖子更新时间',
-    view_count INT DEFAULT 0 COMMENT '浏览次数',
-    is_published BOOLEAN DEFAULT TRUE COMMENT '是否发布',
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    author_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    view_count INT DEFAULT 0,
+    is_published BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_author (author_id),
     INDEX idx_created_at (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='帖子内容表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 最后创建依赖于users和posts的comments表
 CREATE TABLE comments (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    post_id BIGINT NOT NULL COMMENT '关联的帖子ID',
-    user_id BIGINT NOT NULL COMMENT '关联的用户ID（评论者）',
-    content TEXT NOT NULL COMMENT '评论内容',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '评论创建时间',
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '评论更新时间',
+    post_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     parent_id BIGINT,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -43,4 +43,4 @@ CREATE TABLE comments (
     INDEX idx_post (post_id),
     INDEX idx_user (user_id),
     INDEX idx_parent (parent_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评论表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
