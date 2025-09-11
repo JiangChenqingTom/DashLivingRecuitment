@@ -18,7 +18,7 @@ echo ==============================================
 echo.
 
 :: Check if Docker is running
-echo [1/4] Checking Docker status...
+echo [1/5] Checking Docker status...
 docker version >nul 2>&1
 if %errorlevel% equ 0 (
     echo [SUCCESS] Docker is running
@@ -29,7 +29,7 @@ if %errorlevel% equ 0 (
 
 :: Check token file existence
 echo.
-echo [2/4] Checking access token...
+echo [2/5] Checking access token...
 if not exist "%TOKEN_FILE_PATH%" (
     echo [ERROR] Token file not found: %TOKEN_FILE_PATH%
     echo        Please store your Docker Hub access token in this file.
@@ -46,7 +46,7 @@ if "%DOCKER_ACCESS_TOKEN%"=="" (
 
 :: Login to Docker Hub
 echo.
-echo [3/4] Logging in to Docker Hub...
+echo [3/5] Logging in to Docker Hub...
 echo %DOCKER_ACCESS_TOKEN% | docker login -u "%DOCKER_HUB_USERNAME%" --password-stdin >nul 2>&1
 if %errorlevel% equ 0 (
     echo [SUCCESS] Login successful
@@ -57,7 +57,7 @@ if %errorlevel% equ 0 (
 
 :: Pull images
 echo.
-echo [4/4] Pulling images...
+echo [4/5] Pulling images...
 
 echo Pulling MySQL image...
 docker pull mysql:8.0.33
@@ -78,6 +78,16 @@ docker pull %DOCKER_HUB_USERNAME%/forum-app:latest
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to pull Java application image
     goto exit
+)
+
+:: Stop and remove existing containers (new step)
+echo.
+echo [5/5] Stopping and removing existing containers...
+docker-compose down >nul 2>&1
+if %errorlevel% equ 0 (
+    echo [SUCCESS] Existing containers stopped and removed
+) else (
+    echo [WARNING] No existing containers found or failed to stop (proceeding anyway)
 )
 
 :: Start services
