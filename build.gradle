@@ -1,12 +1,12 @@
 plugins {
-    id 'java'
     id 'org.springframework.boot' version '2.7.10'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'
+    id 'groovy'
 }
 
-group = 'com.dash.living'
-version = '1.0-SNAPSHOT'
-
+group = 'com.forum'
+version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -14,13 +14,42 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot Starter
     implementation 'org.springframework.boot:spring-boot-starter-web'
-//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    // MySQL数据库驱动（JDBC，JPA 依赖它）
-    runtimeOnly 'mysql:mysql-connector-java:8.0.33'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'}
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    
+    // Lombok
+    implementation 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    
+    // Database
+    runtimeOnly 'mysql:mysql-connector-java:8.0.33'
+    
+    // Redis
+    implementation 'redis.clients:jedis:3.8.0'
+    
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+    testImplementation 'org.spockframework:spock-spring:2.0-groovy-3.0'
+    testImplementation 'org.codehaus.groovy:groovy-all:3.0.9'
+    testImplementation 'org.testcontainers:testcontainers:1.17.6'
+    testImplementation 'org.testcontainers:mysql:1.17.6'
+    testImplementation 'org.testcontainers:redis:1.17.6'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
 
 test {
     useJUnitPlatform()
+    testLogging {
+        events 'PASSED', 'SKIPPED', 'FAILED'
+    }
 }

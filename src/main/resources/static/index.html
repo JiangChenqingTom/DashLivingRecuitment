@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .post {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .comment {
+            margin-left: 20px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 3px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .auth-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .posts-section {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Forum</h1>
+
+    <div class="auth-section">
+        <h2>Authentication</h2>
+        <div id="login-form">
+            <h3>Login</h3>
+            <div class="form-group">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password">
+            </div>
+            <button onclick="login()">Login</button>
+        </div>
+
+        <div id="register-form">
+            <h3>Register</h3>
+            <div class="form-group">
+                <label for="register-username">Username</label>
+                <input type="text" id="register-username">
+            </div>
+            <div class="form-group">
+                <label for="register-email">Email</label>
+                <input type="email" id="register-email">
+            </div>
+            <div class="form-group">
+                <label for="register-password">Password</label>
+                <input type="password" id="register-password">
+            </div>
+            <button onclick="register()">Register</button>
+        </div>
+
+        <div id="user-info" style="display: none;">
+            <p>Logged in as: <span id="username"></span></p>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div id="create-post-form" style="display: none; margin-bottom: 30px;">
+        <h2>Create New Post</h2>
+        <div class="form-group">
+            <label for="post-title">Title</label>
+            <input type="text" id="post-title">
+        </div>
+        <div class="form-group">
+            <label for="post-content">Content</label>
+            <textarea id="post-content" rows="5"></textarea>
+        </div>
+        <button onclick="createPost()">Create Post</button>
+    </div>
+
+    <div class="posts-section">
+        <h2>Posts</h2>
+        <div id="posts-container"></div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('token');
+        let currentUserId = localStorage.getItem('userId');
+        const API_URL = 'http://localhost:8080/api';
+
+        // Check if user is logged in
+        checkAuthStatus();
+
+        // Load posts on page load
+        loadPosts();
+
+        function checkAuthStatus() {
+            if (token) {
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('register-form').style.display = 'none';
+                document.getElementById('user-info').style.display = 'block';
+                document.getElementById('create-post-form').style.display = 'block';
+                document.getElementById('username').textContent = localStorage.getItem('username');
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    token = data.token;
+                    currentUserId = data.id;
+                    
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('userId', data.id);
+                    localStorage.setItem('username', data.username);
+                    
+                    checkAuthStatus();
+                    alert('Login successful');
+                } else {
+                    alert('Login failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    token = data.token;
+                    currentUserId = data.id;
+                    
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('userId', data.id);
+                    localStorage.setItem('username', data.username);
+                    
+                    checkAuthStatus();
+                    alert('Registration successful');
+                } else {
+                    alert('Registration failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('username');
+            token = null;
+            currentUserId = null;
+            checkAuthStatus();
+        }
+
+        async function loadPosts() {
+            try {
+                const response = await fetch(`${API_URL}/posts?size=10`);
+                if (response.ok) {
+                    const posts = await response.json();
+                    displayPosts(posts.content);
+                }
+            } catch (error) {
+                console.error('Error loading posts:', error);
+            }
+        }
+
+        function displayPosts(posts) {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                postElement.innerHTML = `
+                    <h3>${post.title}</h3>
+                    <p>By ${post.authorUsername} on ${new Date(post.createdAt).toLocaleString()}</p>
+                    <p>${post.content}</p>
+                    <p>Views: ${post.viewCount} | Comments: ${post.commentCount}</p>
+                    <button onclick="loadPostDetails(${post.id})">View Details</button>
+                `;
+                container.appendChild(postElement);
+            });
+        }
+
+        async function loadPostDetails(postId) {
+            try {
+                const response = await fetch(`${API_URL}/posts/${postId}`);
+                if (response.ok) {
+                    const post = await response.json();
+                    displayPostDetails(post);
+                }
+            } catch (error) {
+                console.error('Error loading post details:', error);
+            }
+        }
+
+        async function displayPostDetails(post) {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+
+            // Load comments
+            let commentsHtml = '';
+            try {
+                const commentsResponse = await fetch(`${API_URL}/posts/${post.id}/comments`);
+                if (commentsResponse.ok) {
+                    const comments = await commentsResponse.json();
+                    commentsHtml = comments.map(comment => `
+                        <div class="comment">
+                            <p><strong>${comment.username}</strong> on ${new Date(comment.createdAt).toLocaleString()}</p>
+                            <p>${comment.content}</p>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+
+            const postElement = document.createElement('div');
+            postElement.className = 'post';
+            postElement.innerHTML = `
+                <h3>${post.title}</h3>
+                <p>By ${post.authorUsername} on ${new Date(post.createdAt).toLocaleString()}</p>
+                <p>${post.content}</p>
+                <p>Views: ${post.viewCount} | Comments: ${post.commentCount}</p>
+                
+                ${token ? `
+                    <div class="comment-form">
+                        <h4>Add Comment</h4>
+                        <textarea id="comment-content-${post.id}" rows="3"></textarea>
+                        <button onclick="addComment(${post.id})">Add Comment</button>
+                    </div>
+                ` : ''}
+                
+                <div class="comments">
+                    <h4>Comments</h4>
+                    ${commentsHtml || '<p>No comments yet.</p>'}
+                </div>
+                
+                <button onclick="loadPosts()">Back to Posts</button>
+            `;
+            container.appendChild(postElement);
+        }
+
+        async function createPost() {
+            if (!token) return;
+
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+
+            try {
+                const response = await fetch(`${API_URL}/posts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ title, content })
+                });
+
+                if (response.ok) {
+                    alert('Post created successfully');
+                    document.getElementById('post-title').value = '';
+                    document.getElementById('post-content').value = '';
+                    loadPosts();
+                } else {
+                    alert('Failed to create post');
+                }
+            } catch (error) {
+                console.error('Error creating post:', error);
+            }
+        }
+
+        async function addComment(postId) {
+            if (!token) return;
+
+            const content = document.getElementById(`comment-content-${postId}`).value;
+
+            try {
+                const response = await fetch(`${API_URL}/posts/${postId}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                if (response.ok) {
+                    loadPostDetails(postId);
+                } else {
+                    alert('Failed to add comment');
+                }
+            } catch (error) {
+                console.error('Error adding comment:', error);
+            }
+        }
+    </script>
+</body>
+</html>
