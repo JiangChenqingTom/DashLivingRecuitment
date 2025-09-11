@@ -4,7 +4,6 @@ chcp 65001 >nul 2>&1  # Set code page to UTF-8 to prevent garbled characters
 :: Configuration (Modify these values according to your environment)
 set "DOCKER_HUB_USERNAME=jiangthomas"
 set "TOKEN_FILE_PATH=%USERPROFILE%\.ssh\DockerToken.txt"
-set "APP_TAG=latest"
 
 :: Force run in new console window and keep it open
 if not "%1"=="stayopen" (
@@ -61,21 +60,21 @@ echo.
 echo [4/4] Pulling images...
 
 echo Pulling MySQL image...
-docker pull mysql:latest
+docker pull mysql:8.0.33
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to pull MySQL image
     goto exit
 )
 
 echo Pulling Redis image...
-docker pull redis:latest
+docker pull redis:7.0
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to pull Redis image
     goto exit
 )
 
 echo Pulling Java application image...
-docker pull %DOCKER_HUB_USERNAME%/forum-app:%APP_TAG%
+docker pull %DOCKER_HUB_USERNAME%/forum-app:latest
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to pull Java application image
     goto exit

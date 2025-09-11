@@ -41,7 +41,7 @@ services:
       retries: 3
 
   app:
-    image: ${DOCKER_HUB_USERNAME}/forum-app:${TAG}
+    image: ${DOCKER_HUB_USERNAME}/forum-app:latest
     build:
       context: .
       dockerfile: Dockerfile
