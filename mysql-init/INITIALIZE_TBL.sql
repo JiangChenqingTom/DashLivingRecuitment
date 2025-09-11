@@ -23,7 +23,7 @@ CREATE TABLE posts (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '帖子更新时间',
     view_count INT DEFAULT 0 COMMENT '浏览次数',
     is_published BOOLEAN DEFAULT TRUE COMMENT '是否发布',
-    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE COMMENT '级联删除：用户删除时，其所有帖子也会被删除',
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_author (author_id),
     INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='帖子内容表';
@@ -36,10 +36,10 @@ CREATE TABLE comments (
     content TEXT NOT NULL COMMENT '评论内容',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '评论创建时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '评论更新时间',
-    parent_id BIGINT COMMENT '父评论ID，用于实现评论回复功能（自关联）',
-    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE COMMENT '级联删除：帖子删除时，其所有评论也会被删除',
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE COMMENT '级联删除：用户删除时，其所有评论也会被删除',
-    FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE COMMENT '级联删除：父评论删除时，子评论也会被删除',
+    parent_id BIGINT,
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE,
     INDEX idx_post (post_id),
     INDEX idx_user (user_id),
     INDEX idx_parent (parent_id)
