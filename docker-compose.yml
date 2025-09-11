@@ -1,27 +1,27 @@
 version: '3.8'
 
 services:
-#  mysql:
-#    image: mysql:8.0.33
-#    container_name: app-mysql
-#    restart: always
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root123
-#      MYSQL_DATABASE: forum_db
-#      MYSQL_USER: forum_user
-#      MYSQL_PASSWORD: user123
-#    ports:
-#      - "3306:3306"
-#    volumes:
-#      - /data/docker/mysql-data:/var/lib/mysql
-#      - ./mysql-init:/docker-entrypoint-initdb.d
-#    networks:
-#      - app-network
-#    healthcheck:
-#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
+  mysql:
+    image: mysql:8.0.33
+    container_name: app-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: forum_db
+      MYSQL_USER: forum_user
+      MYSQL_PASSWORD: user123
+    ports:
+      - "3306:3306"
+    volumes:
+      - /data/docker/mysql-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7.0
