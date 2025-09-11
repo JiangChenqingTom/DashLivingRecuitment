@@ -13,7 +13,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - /data/docker/mysql-data:/var/lib/mysql
+      - D:\docker\mysql-data:/var/lib/mysql
       - ./mysql-init:/docker-entrypoint-initdb.d
     networks:
       - app-network
@@ -30,7 +30,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - /data/docker/redis-data:/data:rw
+      - D:\docker\mysql-data:/data:rw
     networks:
       - app-network
     command: redis-server --requirepass redis123
