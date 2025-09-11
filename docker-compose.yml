@@ -22,7 +22,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
+      start_period: 30s
   redis:
     image: redis:7.0
     container_name: app-redis
@@ -39,6 +39,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
+      start_period: 30s
 
   app:
     image: ${DOCKER_HUB_USERNAME}/forum-app:latest
