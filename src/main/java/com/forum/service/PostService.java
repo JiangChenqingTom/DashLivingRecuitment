@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -24,6 +25,7 @@ public class PostService{
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostCacheService postCacheService;
 
     @Transactional
     @CacheEvict(value = {"hotPosts"}, allEntries = true)
@@ -44,22 +46,17 @@ public class PostService{
     }
 
     @Transactional
-    @Cacheable(
-            value = "hotPosts",
-            key = "#postId",
-            unless = "#result == null or #result.viewCount <= 10"
-    )
     public PostResponse getPostById(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+        incrementViewCount(postId);
+        return postCacheService.getPostByIdFromCacheOrDB(postId);
+    }
 
-        String username = postRepository.findUsernameByPostId(postId)
-                .orElse("Unknown");
-
-        post.setViewCount(post.getViewCount() + 1);
-        postRepository.save(post);
-
-        return mapToPostResponse(post, username);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void incrementViewCount(Long postId) {
+        int updated = postRepository.incrementViewCount(postId);
+        if (updated == 0) {
+            throw new ResourceNotFoundException("Post not found with id: " + postId);
+        }
     }
 
     @Transactional(readOnly = true)

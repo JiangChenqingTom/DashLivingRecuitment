@@ -23,8 +23,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("SELECT u.username FROM User u WHERE u.id = (SELECT p.authorId FROM Post p WHERE p.id = :postId)")
     Optional<String> findUsernameByPostId(@Param("postId") Long postId);
 
-//    // 查找热点帖子（浏览量>10）
-//    @Query("SELECT p, u.username FROM Post p JOIN User u ON p.authorId = u.id WHERE p.viewCount > 10 AND p.isPublished = true ORDER BY p.viewCount DESC")
-//    Page<Object[]> findHotPostsWithAuthors(Pageable pageable);
+    @Modifying
+    @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :postId")
+    int incrementViewCount(@Param("postId") Long postId);
 
 }
