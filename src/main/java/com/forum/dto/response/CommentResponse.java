@@ -2,12 +2,14 @@ package com.forum.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class CommentResponse {
+public class CommentResponse implements Serializable {
     private Long id;
     private Long postId;
     private Long userId;

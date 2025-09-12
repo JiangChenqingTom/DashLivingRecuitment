@@ -30,7 +30,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - D:\docker\mysql-data:/data:rw
+      - D:\docker\redis-data:/data:rw
     networks:
       - app-network
     command: redis-server --requirepass redis123

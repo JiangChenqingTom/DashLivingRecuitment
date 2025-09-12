@@ -2,9 +2,10 @@ package com.forum.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class ErrorResponse {
+public class ErrorResponse implements Serializable {
     private int status;
     private String message;
 

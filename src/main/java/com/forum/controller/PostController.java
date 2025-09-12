@@ -7,6 +7,7 @@ import com.forum.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,9 @@ public class PostController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
+
     @PostMapping
     public ResponseEntity<PostResponse> createPost(@Valid @RequestBody PostRequest postRequest) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -38,13 +42,6 @@ public class PostController {
     @GetMapping
     public ResponseEntity<Page<PostResponse>> getAllPublishedPosts(Pageable pageable) {
         return ResponseEntity.ok(postService.getAllPublishedPosts(pageable));
-    }
-
-    @GetMapping("/author/{authorId}")
-    public ResponseEntity<Page<PostResponse>> getPostsByAuthor(
-            @PathVariable Long authorId, 
-            Pageable pageable) {
-        return ResponseEntity.ok(postService.getPostsByAuthor(authorId, pageable));
     }
 
     @PutMapping("/{id}")

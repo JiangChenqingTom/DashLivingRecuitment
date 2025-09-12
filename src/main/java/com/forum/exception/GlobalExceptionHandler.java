@@ -1,7 +1,12 @@
 package com.forum.exception;
 
 import com.forum.dto.response.ErrorResponse;
+import com.forum.util.JwtUtil;
 import io.jsonwebtoken.JwtException;
+import lombok.extern.flogger.Flogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,6 +20,7 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
@@ -54,6 +60,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+
+    @ExceptionHandler(RedisConnectionFailureException.class)
+    public ResponseEntity<ErrorResponse> handleRedisConnectionException(RedisConnectionFailureException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                "Redis server connection failed",
+                LocalDateTime.now()
+        );
+        logger.error("Redis server connection failed: {}", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         ErrorResponse error = new ErrorResponse(
@@ -61,6 +79,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
             LocalDateTime.now()
         );
+        logger.error("Internal server error: {}", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
