@@ -23,7 +23,7 @@ public class PostService{
     private final UserRepository userRepository;
 
     @Transactional
-    @CacheEvict(value = {"posts", "hotPosts"}, allEntries = true)
+    @CacheEvict(value = {"posts"}, allEntries = true)
     public PostResponse createPost(PostRequest postRequest, Long userId) {
         // 验证用户是否存在
         User user = userRepository.findById(userId)

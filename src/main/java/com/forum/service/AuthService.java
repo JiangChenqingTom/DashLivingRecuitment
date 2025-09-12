@@ -76,12 +76,12 @@ public class AuthService{
 
         return new JwtResponse(jwt, "Bearer", savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
     }
+//
+//    public boolean validateToken(String token) {
+//        return jwtUtil.validateJwtToken(token);
+//    }
 
-    public boolean validateToken(String token) {
-        return jwtUtil.validateJwtToken(token);
-    }
-
-    public String getUsernameFromToken(String token) {
-        return jwtUtil.getUserNameFromJwtToken(token);
-    }
+//    public String getUsernameFromToken(String token) {
+//        return jwtUtil.getUserNameFromJwtToken(token);
+//    }
 }
