@@ -50,7 +50,7 @@ public class AuthService{
     @Transactional
     public JwtResponse register(RegisterRequest registerRequest) {
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
-            throw new BadRequestException("Username is already taken!");
+            throw new BadRequestException("Username is already exist!");
         }
 
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
