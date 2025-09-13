@@ -6,6 +6,7 @@ import com.forum.exception.ResourceNotFoundException;
 import com.forum.model.Post;
 import com.forum.model.PostWithUserName;
 import com.forum.model.User;
+import com.forum.repository.CommentRepository;
 import com.forum.repository.PostRepository;
 import com.forum.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class PostService{
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final PostCacheService postCacheService;
 
     @Transactional
@@ -88,7 +90,7 @@ public class PostService{
     }
 
     @Transactional
-    @CacheEvict(value = {"hotPosts"}, key = "#postId")
+    @CacheEvict(value = {"hotPosts", "comment:post"}, key = "#postId")
     public void deletePost(Long postId, Long userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
@@ -97,6 +99,7 @@ public class PostService{
             throw new SecurityException("You don't have permission to delete this post");
         }
 
+        commentRepository.deleteByPostId(postId);
         postRepository.delete(post);
     }
 

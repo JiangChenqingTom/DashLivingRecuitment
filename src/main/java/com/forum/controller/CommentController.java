@@ -43,7 +43,7 @@ public class CommentController {
             @Valid @RequestBody CommentRequest commentRequest) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Long userId = userRepository.findByUsername(username).orElseThrow().getId();
-        return ResponseEntity.ok(commentService.updateComment(commentId, commentRequest, userId));
+        return ResponseEntity.ok(commentService.updateComment(postId, commentId, commentRequest, userId));
     }
 
     @DeleteMapping("/{commentId}")
@@ -52,7 +52,7 @@ public class CommentController {
             @PathVariable Long commentId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Long userId = userRepository.findByUsername(username).orElseThrow().getId();
-        commentService.deleteComment(commentId, userId);
+        commentService.deleteComment(postId, commentId, userId);
         return ResponseEntity.noContent().build();
     }
 }

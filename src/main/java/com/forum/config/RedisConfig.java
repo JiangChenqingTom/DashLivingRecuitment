@@ -45,7 +45,7 @@ public class RedisConfig {
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
         cacheConfigurations.put("hotPosts", defaultConfig.entryTtl(Duration.ofHours(1)));
         cacheConfigurations.put("users", defaultConfig.entryTtl(Duration.ofHours(24)));
-        cacheConfigurations.put("comments", defaultConfig.entryTtl(Duration.ofMinutes(15)));
+        cacheConfigurations.put("comment:post", defaultConfig.entryTtl(Duration.ofMinutes(15)));
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaultConfig)

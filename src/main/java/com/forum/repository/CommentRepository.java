@@ -12,6 +12,7 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByPostIdOrderByCreatedAtAsc(Long postId);
     List<Comment> findByParentId(Long parentId);
+    void deleteByPostId(Long postId);
     
     @Query("SELECT c, u.username FROM Comment c JOIN User u ON c.userId = u.id WHERE c.postId = :postId ORDER BY c.createdAt ASC")
     List<Object[]> findCommentsWithUsernamesByPostId(@Param("postId") Long postId);
