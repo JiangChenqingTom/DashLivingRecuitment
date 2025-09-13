@@ -1,9 +1,6 @@
 package com.forum.exception;
 
 import com.forum.dto.response.ErrorResponse;
-import com.forum.util.JwtUtil;
-import io.jsonwebtoken.JwtException;
-import lombok.extern.flogger.Flogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.RedisConnectionFailureException;

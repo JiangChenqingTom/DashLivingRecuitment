@@ -1,6 +1,7 @@
 package com.forum.repository;
 
 import com.forum.model.Post;
+import com.forum.model.PostWithUserName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,11 +15,11 @@ import java.util.Optional;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    // 查找作者的所有帖子
-    Page<Post> findByAuthorId(Long authorId, Pageable pageable);
+    @Query("SELECT new com.forum.model.PostWithUserName(p, u.username) FROM Post p LEFT JOIN User u ON p.authorId = u.id WHERE p.id = :postId")
+    Optional<PostWithUserName> findPostWithUsernameById(@Param("postId") Long postId);
 
-    @Query("SELECT p, u.username FROM Post p JOIN User u ON p.authorId = u.id WHERE p.isPublished = true ORDER BY p.createdAt DESC")
-    Page<Object[]> findAllPublishedPostsWithAuthors(Pageable pageable);
+    @Query("SELECT new com.forum.model.PostWithUserName(p, u.username) FROM Post p JOIN User u ON p.authorId = u.id WHERE p.isPublished = true ORDER BY p.createdAt DESC")
+    Page<PostWithUserName> findAllPublishedPostsWithAuthors(Pageable pageable);
 
     @Query("SELECT u.username FROM User u WHERE u.id = (SELECT p.authorId FROM Post p WHERE p.id = :postId)")
     Optional<String> findUsernameByPostId(@Param("postId") Long postId);

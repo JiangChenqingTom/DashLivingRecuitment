@@ -4,6 +4,7 @@ import com.forum.dto.request.PostRequest;
 import com.forum.dto.response.PostResponse;
 import com.forum.exception.ResourceNotFoundException;
 import com.forum.model.Post;
+import com.forum.model.PostWithUserName;
 import com.forum.model.User;
 import com.forum.repository.PostRepository;
 import com.forum.repository.UserRepository;
@@ -11,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -61,8 +61,9 @@ public class PostService{
 
     @Transactional(readOnly = true)
     public Page<PostResponse> getAllPublishedPosts(Pageable pageable) {
-        return postRepository.findAllPublishedPostsWithAuthors(pageable)
-                .map(this::mapToPostResponse);
+        Page<PostWithUserName> postWithUserNames = postRepository.findAllPublishedPostsWithAuthors(pageable);
+        return postWithUserNames.map(p ->
+                mapToPostResponse(p.getPost(), p.getUsername()));
     }
 
     @Transactional
