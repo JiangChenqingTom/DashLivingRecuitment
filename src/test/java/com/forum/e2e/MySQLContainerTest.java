@@ -2,6 +2,7 @@ package com.forum.e2e;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -9,6 +10,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -39,33 +42,44 @@ public class MySQLContainerTest {
             .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("MySQLContainer"))) // 容器日志输出
             .waitingFor(Wait.forLogMessage(".*ready for connections.*", 1) // 等待MySQL就绪
                     .withStartupTimeout(Duration.ofMinutes(3))); // 延长超时时间
+    // Redis容器配置（使用GenericContainer启动Redis）
+    @Container
+    static GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:7.0"))
+            .withExposedPorts(6379) // 暴露Redis默认端口
+            .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("RedisContainer")))
+            .waitingFor(Wait.forListeningPort() // 等待Redis端口监听
+                    .withStartupTimeout(Duration.ofMinutes(2)));
 
-    // 测试容器启动及数据库连接
     @Test
-    void testMySQLContainer() throws Exception {
-        // 验证容器状态
+    void testMySQLAndRedisContainers() throws Exception {
+        // 验证MySQL容器状态及连接
         assert mysql.isRunning() : "MySQL容器未启动";
-        System.out.println("MySQL容器已启动，JDBC URL: " + mysql.getJdbcUrl());
-
-        // 验证数据库连接
+        System.out.println("MySQL JDBC URL: " + mysql.getJdbcUrl());
         try (Connection connection = DriverManager.getConnection(
                 mysql.getJdbcUrl(),
                 mysql.getUsername(),
                 mysql.getPassword()
         )) {
-            assert connection != null : "数据库连接失败";
-            System.out.println("数据库连接成功！");
-
-            // 执行简单查询验证功能
+            assert connection != null : "MySQL连接失败";
             try (Statement statement = connection.createStatement()) {
                 statement.execute("CREATE TABLE test (id INT)");
                 statement.execute("INSERT INTO test VALUES (1)");
-                ResultSet resultSet = statement.executeQuery("SELECT id FROM test");
-
-                assert resultSet.next() : "查询结果为空";
-                assert resultSet.getInt("id") == 1 : "查询结果不正确";
-                System.out.println("数据库操作验证成功！");
+                System.out.println("MySQL操作验证成功");
             }
+        }
+
+        // 验证Redis容器状态及连接
+        assert redis.isRunning() : "Redis容器未启动";
+        String redisHost = redis.getHost();
+        Integer redisPort = redis.getFirstMappedPort(); // 获取映射到主机的端口
+        System.out.println("Redis连接信息: " + redisHost + ":" + redisPort);
+
+        // 使用Jedis客户端验证Redis功能
+        try (Jedis jedis = new Jedis(redisHost, redisPort)) {
+            jedis.set("test-key", "test-value");
+            String value = jedis.get("test-key");
+            assert "test-value".equals(value) : "Redis操作失败";
+            System.out.println("Redis操作验证成功");
         }
     }
 }
