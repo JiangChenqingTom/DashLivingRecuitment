@@ -17,11 +17,6 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "test secccccceeeeeed~";
-    }
-
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
