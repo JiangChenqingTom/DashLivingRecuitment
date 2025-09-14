@@ -86,6 +86,7 @@ class PostCacheServiceTest {
         verify(postRepository, times(1)).findPostWithUsernameById(postId);
     }
 
+
     @Test
     void getPostByIdFromCacheOrDB_WhenViewCountLessThan10_ShouldNotBeCached() {
         Long postId = 2L;
