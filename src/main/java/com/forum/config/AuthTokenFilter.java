@@ -17,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
 //Authentication
 public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
@@ -32,6 +33,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String jwt = parseJwt(request);
         if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+            logger.info("JWT token is valid...");
             String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);

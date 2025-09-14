@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,8 @@ import java.util.Map;
 @Configuration
 @EnableCaching
 public class RedisConfig {
+    @Value("${jwt.expiration}")
+    private int jwtExpirationMs;
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
@@ -44,7 +47,7 @@ public class RedisConfig {
 
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
         cacheConfigurations.put("hotPosts", defaultConfig.entryTtl(Duration.ofHours(1)));
-        cacheConfigurations.put("users", defaultConfig.entryTtl(Duration.ofHours(24)));
+        cacheConfigurations.put("userTokens", defaultConfig.entryTtl(Duration.ofMillis(jwtExpirationMs)));
         cacheConfigurations.put("comment:post", defaultConfig.entryTtl(Duration.ofMinutes(15)));
 
         return RedisCacheManager.builder(connectionFactory)

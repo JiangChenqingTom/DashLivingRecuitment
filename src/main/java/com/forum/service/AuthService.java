@@ -6,12 +6,8 @@ import com.forum.dto.response.JwtResponse;
 import com.forum.exception.BadRequestException;
 import com.forum.model.User;
 import com.forum.repository.UserRepository;
-import com.forum.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,24 +18,19 @@ import java.time.LocalDateTime;
 public class AuthService{
 
     @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
     UserRepository userRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    JwtUtil jwtUtil;
+    TokenCacheService tokenCacheService;
 
     public JwtResponse login(LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        String username = loginRequest.getUsername();
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtil.generateJwtToken(authentication);
-        
+        String jwt = tokenCacheService.getOrGenerateToken(username, loginRequest.getPassword());
+
         User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow();
         user.setLastLoginAt(LocalDateTime.now());
         userRepository.save(user);
@@ -67,21 +58,9 @@ public class AuthService{
 
         User savedUser = userRepository.save(user);
 
-        // Authenticate the new user
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(registerRequest.getUsername(), registerRequest.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtil.generateJwtToken(authentication);
+        String jwt = tokenCacheService.getOrGenerateToken(registerRequest.getUsername(), registerRequest.getPassword());
 
         return new JwtResponse(jwt, "Bearer", savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
     }
-//
-//    public boolean validateToken(String token) {
-//        return jwtUtil.validateJwtToken(token);
-//    }
 
-//    public String getUsernameFromToken(String token) {
-//        return jwtUtil.getUserNameFromJwtToken(token);
-//    }
 }
