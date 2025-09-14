@@ -117,9 +117,4 @@ public class PostService{
         return response;
     }
 
-    private PostResponse mapToPostResponse(Object[] result) {
-        Post post = (Post) result[0];
-        String username = (String) result[1];
-        return mapToPostResponse(post, username);
-    }
 }

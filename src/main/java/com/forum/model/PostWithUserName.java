@@ -1,10 +1,12 @@
 package com.forum.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class PostWithUserName {
     private Post post;
     private String username;

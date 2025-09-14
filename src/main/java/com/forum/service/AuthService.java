@@ -4,6 +4,7 @@ import com.forum.dto.request.LoginRequest;
 import com.forum.dto.request.RegisterRequest;
 import com.forum.dto.response.JwtResponse;
 import com.forum.exception.BadRequestException;
+import com.forum.exception.UserNotFoundException;
 import com.forum.model.User;
 import com.forum.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,11 @@ public class AuthService{
 
     public JwtResponse login(LoginRequest loginRequest) {
         String username = loginRequest.getUsername();
-
-        String jwt = tokenCacheService.getOrGenerateToken(username, loginRequest.getPassword());
-
-        User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new UserNotFoundException("User does not exist: " + username));
         user.setLastLoginAt(LocalDateTime.now());
         userRepository.save(user);
 
+        String jwt = tokenCacheService.getOrGenerateToken(username, loginRequest.getPassword());
         return new JwtResponse(jwt, "Bearer", user.getId(), user.getUsername(), user.getEmail());
     }
 
