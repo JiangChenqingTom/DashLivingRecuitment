@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '11'
-          distribution: 'adoptopenjdk'
+          distribution: 'temurin'
           cache: maven
 
       - name: Run tests
