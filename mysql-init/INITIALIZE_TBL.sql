@@ -6,7 +6,6 @@ CREATE TABLE users (
     full_name VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    last_login_at TIMESTAMP,
     is_active BOOLEAN DEFAULT TRUE,
     INDEX idx_email (email),
     INDEX idx_username (username)

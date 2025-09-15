@@ -63,8 +63,6 @@ class AuthServiceTest {
         assertEquals(TEST_USERNAME, response.getUsername());
         assertEquals(TEST_EMAIL, response.getEmail());
 
-        assertNotNull(mockUser.getLastLoginAt());
-        verify(userRepository).save(mockUser);
     }
 
     @Test

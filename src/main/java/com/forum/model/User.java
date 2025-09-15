@@ -35,9 +35,6 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
-    @Column(name = "last_login_at")
-    private LocalDateTime lastLoginAt;
-    
     @Column(name = "is_active")
     private boolean isActive = true;
 }

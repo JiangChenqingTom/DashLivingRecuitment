@@ -67,4 +67,4 @@ services:
 
 networks:
   app-network:
-    driver: bridge  # 桥接网络，适合单机部署
+    driver: bridge

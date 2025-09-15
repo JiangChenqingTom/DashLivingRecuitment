@@ -8,12 +8,9 @@ import com.forum.exception.UserNotFoundException;
 import com.forum.model.User;
 import com.forum.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 public class AuthService{
@@ -30,8 +27,6 @@ public class AuthService{
     public JwtResponse login(LoginRequest loginRequest) {
         String username = loginRequest.getUsername();
         User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new UserNotFoundException("User does not exist: " + username));
-        user.setLastLoginAt(LocalDateTime.now());
-        userRepository.save(user);
 
         String jwt = tokenCacheService.getOrGenerateToken(username, loginRequest.getPassword());
         return new JwtResponse(jwt, "Bearer", user.getId(), user.getUsername(), user.getEmail());
