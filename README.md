@@ -1,134 +1,84 @@
-# Question 1
-Given the pointer to the head node of a linked list, change the next pointers of the nodes so that their order is reversed. The head pointer given may be null meaning that the initial list is empty.
+# DashLiving Forum
 
-## Example
-references the list 1 -> 2 -> 3 -> NULL
 
-Manipulate the  pointers of each node in place and return , now referencing the head of the list 3 -> 2 -> 1 -> NULL.
+| Category | Technology/Component | Version | Purpose |
+|----------|---------------------|---------|---------|
+| Language | Java | 11      | Main programming language |
+| Framework | Spring Boot | 2.7.10  | Microservices foundation |
+| Database | MySQL | 8.0.33  | Persistent storage |
+| Cache | Redis | 7.0     | Performance optimization and session caching |
+| Build Tool | Gradle | 8.10    | Project build and dependency management |
+| Containerization | Docker | 28.3.3  | Application containerization |
+| Orchestration | Docker Compose | v2.39.2-desktop.1  | Local development environment deployment |
+| Auth | Spring Security + JWT | -       | User authentication and authorization |
+| Testing | JUnit 5 + Mockito | -       | Unit and integration testing |
+| E2E Testing | TestContainers | -       | Containerized integration tests |
+| CI/CD | GitHub Actions | -       | Continuous integration and build automation |
 
-## Function Description
+## Core Features
 
-Complete the reverse function in the editor below.
+- **User Authentication**: Registration, login
+- **Post Management**: Create, view, edit, delete posts
+- **Comment System**: Support for nested comments with tree structure display
+- **Redis Caching**: Cache for hot posts and comments to improve performance
+- **Docker Deployment**: Containerized deployment with Docker Compose
+- **CI/CD Pipeline**: Automated testing, building, and deployment processes
 
-reverse has the following parameter:
+## Quick Start
 
-* SinglyLinkedListNode pointer head: a reference to the head of a list
-## Returns
+### Prerequisites
+- JDK 11
+- Docker and Docker Compose
+- Gradle 8.10
+- Git
 
-* SinglyLinkedListNode pointer: a reference to the head of the reversed list
-## Input Format
+### Local Development Setup
 
-The first line contains an integer , the number of test cases.
-
-Each test case has the following format:
-
-The first line contains an integer n, the number of elements in the linked list.
-Each of the next n lines contains an integer, the  values of the elements in the linked list.
-
-## Constraints
-```
-* 1 <= t <= 10
-* 1 <= n <= 1000
-* 1 <= list[i] <= 1000, where  is the  element in the list.
-```
-## Sample Input
-```
-1
-5
-1
-2
-3
-4
-5
+1. **Clone the project**
+```bash
+git clone https://github.com/JiangChenqingTom/DashLivingRecuitment.git
+cd DashLivingRecuitment
 ```
 
-## Sample Output
+
+### Automated Deployment
+Use `startup.bat` script for automated deployment:
+```bash
+startup.bat
 ```
-5 4 3 2 1 
-```
-## Explanation
+This will start the following services:
+- MySQL database (port 3306)
+- Redis cache (port 6379)
+- Forum application (port 8080)
+- 
+The script will:
+1. Check Docker status
+2. Verify Docker Hub access token
+3. Login to Docker Hub
+4. Build and push Docker images
+5. Start container services
 
-The initial linked list is: ```1 -> 2 -> 3 -> 4 -> 5 -> NULL```.
+## Testing
 
-The reversed linked list is: ```5 -> 4 -> 3 -> 2 -> 1 -> NULL```.
-
-
-# Question 2
-
-Given pointers to the heads of two sorted linked lists, merge them into a single, sorted linked list. Either head pointer may be null meaning that the corresponding list is empty.
-
-## Example
-headA refers to ```1 -> 3 -> 7 -> NULL```
-headB refers to ```1 -> 2 -> NULL```
-
-The new list is ```1 -> 1 -> 2 -> 3 -> 7 -> NULL```
-
-## Function Description
-
-Complete the mergeLists function in the editor below.
-
-mergeLists has the following parameters:
-
-* SinglyLinkedListNode pointer headA: a reference to the head of a list
-* SinglyLinkedListNode pointer headB: a reference to the head of a list
-
-
-## Returns
-
-* SinglyLinkedListNode pointer: a reference to the head of the merged list
-
-
-## Input Format
-
-The first line contains an integer , the number of test cases.
-
-The format for each test case is as follows:
-
-The first line contains an integer , the length of the first linked list.
-The next  lines contain an integer each, the elements of the linked list.
-The next line contains an integer , the length of the second linked list.
-The next  lines contain an integer each, the elements of the second linked list.
-
-## Constraints
-* 1 <= t <= 10
-* 1 <= n, m <= 1000
-* 1 <= list[i], where list[i] is the ith element of the list.
-
-## Sample Input
-```
-1
-3
-1
-2
-3
-2
-3
-4
+### Unit Tests
+```bash
+./gradlew test
 ```
 
-## Sample Output
-```
-1 2 3 3 4 
-```
+### End-to-End Tests
+gradlew test --tests "com.forum.e2e.ForumE2ETest"
 
-## Explanation
+Report will be generated at `build/reports/jacoco/test/html/index.html`
 
-The first linked list is: ``` 1 -> 3 -> 7 -> NULL```
+## Database Design
 
-The second linked list is: ``` 3 -> 4 -> NULL```
+### Main Tables
+- **users**: User information
+- **posts**: Posts content and metadata
+- **comments**: Comments with self-referencing for nested structure
+- **notifications**: User notifications
 
-Hence, the merged linked list is: ```1 -> 2 -> 3 -> 3 -> 4 -> NULL```
-
-
-# Question 3
-
-Create a simple web application using one of the following programming languages and a framework of your choice. The requirements are as follows:
-
-* Use a database for data persistence.
-* Implement interfaces for creating posts and comments.
-* Implement login functionality.
-* Use Docker and Docker Compose for local deployment.
-* Use a caching service.
-* Create unit test for important code
-* Create end to end test with test container
-* Bonus: Include CI/CD scripts for deployment.
+### Caching Strategy
+- Hot posts cache: Redis Hash structure
+- User session cache: Redis for authentication info
+- Comment tree cache: Optimized for nested comment query performance
