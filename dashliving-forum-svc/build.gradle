@@ -1,0 +1,5 @@
+dependencies {
+    implementation(project(':dashliving-common')) {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
+    }
+}

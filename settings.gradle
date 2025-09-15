@@ -1,2 +1,6 @@
 rootProject.name = 'dash-living-recruitment'
+include 'dashliving-gateway-svc'
+include 'dashliving-auth-svc'
+include 'dashliving-forum-svc'
+include 'dashliving-common'
 
