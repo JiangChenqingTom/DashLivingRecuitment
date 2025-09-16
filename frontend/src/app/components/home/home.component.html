@@ -1,0 +1,76 @@
+<div class="container mt-4 mb-5">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1 class="mb-0">
+          <i class="fas fa-comments text-primary me-2"></i>Thomas's Forum
+        </h1>
+        <button 
+          *ngIf="isLoggedIn"
+          class="btn btn-primary" 
+          routerLink="/create-post">
+          <i class="fas fa-plus me-2"></i>Create Post
+        </button>
+      </div>
+
+      <!-- Loading state -->
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3">Loading posts...</p>
+      </div>
+
+      <!-- No posts state -->
+      <div
+        *ngIf="!isLoading && posts.length === 0"
+        class="alert alert-info text-center"
+      >
+        <i class="fas fa-info-circle me-2"></i>
+        No posts available yet.
+      </div>
+
+      <!-- Posts list -->
+      <div *ngIf="!isLoading && posts.length > 0" class="posts-list">
+        <div *ngFor="let post of posts" class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">{{ post.title }}</h5>
+            <small class="text-muted">{{ post.createdAt | date }}</small>
+          </div>
+          
+          <div class="card-body">
+            <p class="card-text">{{ post.content }}</p>
+            <div class="text-muted small mb-3">
+              Posted by {{ post.authorUsername }} · {{ post.viewCount }} views · 
+              {{ post.commentCount }} comments
+            </div>
+            
+            <!-- Comments section -->
+            <app-comment 
+              [comments]="getCommentsForPost(post.id)"
+              [postId]="post.id"
+              (onAddComment)="handleAddComment($event)">
+            </app-comment>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <button 
+            class="btn btn-outline-primary"
+            (click)="loadPreviousPage()"
+            [disabled]="currentPage === 0">
+            Previous Page
+          </button>
+          <span>Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+          <button 
+            class="btn btn-outline-primary"
+            (click)="loadNextPage()"
+            [disabled]="currentPage === totalPages - 1">
+            Next Page
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

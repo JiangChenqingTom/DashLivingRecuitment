@@ -1,0 +1,25 @@
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+.btn-primary {
+    min-width: 120px;
+}
+
+.btn-secondary {
+    min-width: 100px;
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+}
