@@ -1,0 +1,126 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <h2 class="text-center mb-4">Register</h2>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="username" class="form-label">Login ID</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                formControlName="username"
+                [class.is-invalid]="
+                  submitted && registerForm.get('username')?.invalid
+                "
+              />
+              <div
+                *ngIf="submitted && registerForm.get('username')?.invalid"
+                class="invalid-feedback"
+              >
+                Please enter your login ID
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                formControlName="email"
+                [class.is-invalid]="
+                  submitted && registerForm.get('email')?.invalid
+                "
+              />
+              <div
+                *ngIf="submitted && registerForm.get('email')?.invalid"
+                class="invalid-feedback"
+              >
+                <span *ngIf="registerForm.get('email')?.errors?.['required']"
+                  >Please enter your email address</span
+                >
+                <span *ngIf="registerForm.get('email')?.errors?.['email']"
+                  >Please enter a valid email address</span
+                >
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">密码</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                formControlName="password"
+                maxlength="20"
+                minlength="6"
+                [class.is-invalid]="
+                  submitted && registerForm.get('password')?.invalid
+                "
+              />
+              <div
+                *ngIf="submitted && registerForm.get('password')?.invalid"
+                class="invalid-feedback"
+              >
+                Please enter a password with at least 6 characters, no more than 20 characters, and must contain both letters and numbers
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                [class.is-invalid]="
+                  submitted &&
+                  (registerForm.get('confirmPassword')?.invalid ||
+                    registerForm.hasError('passwordMismatch'))
+                "
+              />
+              <div
+                *ngIf="
+                  submitted && registerForm.get('confirmPassword')?.invalid
+                "
+                class="invalid-feedback"
+              >
+                Please confirm your password
+              </div>
+              <div
+                *ngIf="submitted && registerForm.hasError('passwordMismatch')"
+                class="invalid-feedback"
+              >
+                Passwords do not match
+              </div>
+            </div>
+
+            <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+              {{ errorMessage }}
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              [disabled]="isLoading"
+            >
+              <span
+                *ngIf="isLoading"
+                class="spinner-border spinner-border-sm me-2" 
+              ></span>
+              Register
+            </button>
+          </form>
+
+          <div class="mt-3 text-center">
+            Already have an account? <a routerLink="/login">Login</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

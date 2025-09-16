@@ -1,5 +1,8 @@
 # DashLiving Forum
 
+## Front-end code is in `frontend/`
+
+## Back-end implementation as below
 
 | Category | Technology/Component | Version | Purpose |
 |----------|---------------------|---------|---------|

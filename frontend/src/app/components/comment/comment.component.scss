@@ -1,0 +1,139 @@
+.comments-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.comments-list {
+    margin-bottom: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 10px;  /* 为滚动条留出空间 */
+}
+
+.comment {
+    padding: 12px;
+    margin-bottom: 12px;
+    border-left: 3px solid #e9ecef;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    transition: background-color 0.2s, border-left-color 0.2s;
+
+    &:hover {
+        border-left-color: #007bff;
+    }
+
+    .replies {
+        margin-top: 10px;
+        margin-left: 15px;  /* 增加子评论的缩进 */
+    }
+
+    .reply-form {
+        margin-top: 8px;
+        margin-bottom: 8px;
+        padding-left: 12px;
+
+        .input-group {
+            .btn-sm {
+                padding: 4px 8px;
+                font-size: 0.875rem;
+            }
+        }
+    }
+
+    .comment-actions {
+        margin-top: 8px;
+        
+        .btn-link {
+            padding: 0;
+            font-size: 0.875rem;
+            color: #6c757d;
+            text-decoration: none;
+
+            &:hover {
+                color: #495057;
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+.comment:hover {
+    background-color: #e9ecef;
+}
+
+.comment:last-child {
+    margin-bottom: 0;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.author {
+    font-weight: 600;
+    color: #495057;
+}
+
+.date {
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.comment-content {
+    color: #212529;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.comment-form {
+    margin-top: 16px;
+}
+
+.input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.input-group button {
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.input-group button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.alert {
+    margin-bottom: 0;
+    padding: 12px;
+}
+
+.alert-link {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.alert-link:hover {
+    text-decoration: underline;
+}
