@@ -3,10 +3,10 @@ FROM openjdk:11-jdk-slim AS builder
 WORKDIR /app
 
 # 复制gradle相关文件
-COPY ../gradlew .
-COPY ../gradle gradle
+COPY gradlew .
+COPY gradle gradle
 COPY build.gradle .
-COPY ../settings.gradle .
+COPY settings.gradle .
 
 # 复制源代码
 COPY src/ src/
