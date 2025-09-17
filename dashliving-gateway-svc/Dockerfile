@@ -9,7 +9,7 @@ COPY build.gradle .
 COPY settings.gradle .
 
 # 复制源代码
-COPY src/ src/
+COPY dashliving-gateway-svc/src/ src/
 
 RUN chmod +x ./gradlew
 
