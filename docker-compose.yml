@@ -23,6 +23,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+
   redis:
     image: redis:7.0
     container_name: app-redis
@@ -41,18 +42,41 @@ services:
       retries: 3
       start_period: 30s
 
-  app:
-    image: ${DOCKER_HUB_USERNAME}/forum-app:latest
+  auth-service:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: forum-app
+      dockerfile: dashliving-auth-svc/Dockerfile
+    container_name: auth-service
     restart: always
     depends_on:
       mysql:
         condition: service_healthy
       redis:
         condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/forum_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: forum_user
+      SPRING_DATASOURCE_PASSWORD: user123
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: redis123
+      SERVER_PORT: 8081
+    networks:
+      - app-network
+
+  gateway-service:
+    build:
+      context: .
+      dockerfile: dashliving-gateway-svc/Dockerfile
+    container_name: gateway-service
+    restart: always
+    depends_on:
+      - auth-service
+      - forum-service
+      - mysql
+      - redis
     ports:
       - "8080:8080"
     environment:
@@ -62,6 +86,32 @@ services:
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
       SPRING_REDIS_PASSWORD: redis123
+      SERVICES_AUTH_URL: http://auth-service:8081
+      SERVICES_FORUM_URL: http://forum-service:8082
+    networks:
+      - app-network
+
+  forum-service:
+    build:
+      context: .
+      dockerfile: dashliving-forum-svc/Dockerfile
+    container_name: forum-service
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/forum_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: forum_user
+      SPRING_DATASOURCE_PASSWORD: user123
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: redis123
+      SERVER_PORT: 8082
     networks:
       - app-network
 
