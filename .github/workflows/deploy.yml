@@ -43,8 +43,18 @@ jobs:
           export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
           
           # Build and push forum service
-          cd dashliving-forum-svc
-          docker build -t $DOCKER_HUB_USERNAME/forum-app:$TAG -t $DOCKER_HUB_USERNAME/forum-app:$LATEST_TAG .
+          docker build -f dashliving-forum-svc/Dockerfile -t $DOCKER_HUB_USERNAME/forum-app:$TAG -t $DOCKER_HUB_USERNAME/forum-app:$LATEST_TAG .
           
+          # Build and push auth service
+          docker build -f dashliving-auth-svc/Dockerfile -t $DOCKER_HUB_USERNAME/auth-app:$TAG -t $DOCKER_HUB_USERNAME/auth-app:$LATEST_TAG .
+          
+          # Build and push gateway service
+          docker build -f dashliving-gateway-svc/Dockerfile -t $DOCKER_HUB_USERNAME/gateway-app:$TAG -t $DOCKER_HUB_USERNAME/gateway-app:$LATEST_TAG .
+          
+          # Push all images
           docker push $DOCKER_HUB_USERNAME/forum-app:$TAG
           docker push $DOCKER_HUB_USERNAME/forum-app:$LATEST_TAG
+          docker push $DOCKER_HUB_USERNAME/auth-app:$TAG
+          docker push $DOCKER_HUB_USERNAME/auth-app:$LATEST_TAG
+          docker push $DOCKER_HUB_USERNAME/gateway-app:$TAG
+          docker push $DOCKER_HUB_USERNAME/gateway-app:$LATEST_TAG
