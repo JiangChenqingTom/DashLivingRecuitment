@@ -42,6 +42,8 @@ jobs:
           export LATEST_TAG=latest
           export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
           
+          # Build and push forum service
+          cd dashliving-forum-svc
           docker build -t $DOCKER_HUB_USERNAME/forum-app:$TAG -t $DOCKER_HUB_USERNAME/forum-app:$LATEST_TAG .
           
           docker push $DOCKER_HUB_USERNAME/forum-app:$TAG
