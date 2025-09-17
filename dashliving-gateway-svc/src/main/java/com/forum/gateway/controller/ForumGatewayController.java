@@ -2,6 +2,8 @@ package com.forum.gateway.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -48,7 +50,11 @@ public class ForumGatewayController {
                 headers.set(headerName, request.getHeader(headerName));
             }
         }
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getName() != null) {
+            String username = authentication.getName();
+            headers.set("X-User-Username", username);
+        }
         byte[] requestBody = request.getInputStream().readAllBytes();
         HttpEntity<byte[]> requestEntity = new HttpEntity<>(requestBody, headers);
 
@@ -65,7 +71,7 @@ public class ForumGatewayController {
                 requestEntity,
                 Object.class
         );
-
+        System.out.println("The exchange method passed and now is here.");
         return new ResponseEntity<>(response.getBody(), response.getStatusCode());
     }
 }

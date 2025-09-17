@@ -5,6 +5,7 @@ import com.forum.common.dto.response.CommentResponse;
 import com.forum.repository.UserRepository;
 import com.forum.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +26,11 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<CommentResponse> createComment(
             @PathVariable Long postId,
+            @RequestHeader(value = "X-User-Username", required = false) String username,
             @Valid @RequestBody CommentRequest commentRequest) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (username == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         Long userId = userRepository.findByUsername(username).orElseThrow().getId();
         return ResponseEntity.ok(commentService.createComment(postId, commentRequest, userId));
     }
