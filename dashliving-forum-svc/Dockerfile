@@ -7,8 +7,8 @@ COPY gradle gradle/
 COPY build.gradle .
 COPY settings.gradle .
 
-COPY dashliving-common/ dashliving-common/  # 复制依赖的common模块
-COPY dashliving-forum-svc/ dashliving-forum-svc/  # 复制目标子项目（包含其src和build.gradle）
+COPY dashliving-common/ dashliving-common/
+COPY dashliving-forum-svc/ dashliving-forum-svc/
 
 RUN chmod +x ./gradlew
 RUN ./gradlew :dashliving-forum-svc:clean :dashliving-forum-svc:build -x test
