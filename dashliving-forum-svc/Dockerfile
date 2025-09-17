@@ -4,6 +4,7 @@ WORKDIR /app
 
 # 复制gradle相关文件
 COPY gradlew .
+RUN chmod +x ./gradlew
 COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
