@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - TomLocal
+      - DashLivingRefactor
   workflow_dispatch:
 
 jobs:
