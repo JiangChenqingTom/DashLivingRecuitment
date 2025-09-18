@@ -53,7 +53,7 @@ public class PostService{
         return postCacheService.getPostByIdFromCacheOrDB(postId);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional()
     public void incrementViewCount(Long postId) {
         int updated = postRepository.incrementViewCount(postId);
         if (updated == 0) {
